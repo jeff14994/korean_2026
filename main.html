@@ -104,6 +104,62 @@
             border-radius: 12px;
         }
 
+        .panel-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .panel-tab {
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .panel-tab.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .content-panel {
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        .grammar-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .grammar-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .grammar-item h4 {
+            margin: 0 0 8px;
+            color: var(--primary);
+        }
+
+        .grammar-item p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.94rem;
+        }
+
         .audio-field {
             display: flex;
             flex-direction: column;
@@ -241,6 +297,26 @@
             </div>
         </section>
 
+        <section class="panel-tabs">
+            <button class="panel-tab active" data-panel="sentencesPanel" type="button">句子練習</button>
+            <button class="panel-tab" data-panel="grammarPanel" type="button">文法重點</button>
+        </section>
+
+        <section id="grammarPanel" class="content-panel">
+            <h2>文法重點整理</h2>
+            <div class="grammar-summary">
+                <div class="grammar-item"><h4>主格 / 主題</h4><p><b>이/가</b> 標示主詞；<b>은/는</b> 表示主題、對照、強調。</p></div>
+                <div class="grammar-item"><h4>添加 / 限定</h4><p><b>도</b> 表示也；<b>만</b> 表示只有、只。</p></div>
+                <div class="grammar-item"><h4>受格 / 對象</h4><p><b>를/을</b> 標示受詞；<b>에게/한테</b> 表示對象；<b>한테서</b> 表示從某人那裡。</p></div>
+                <div class="grammar-item"><h4>地點 / 時間</h4><p><b>에</b> 表示位置或時間點；<b>에서</b> 表示動作發生地；<b>부터/까지</b> 表示起訖。</p></div>
+                <div class="grammar-item"><h4>連接 / 選擇</h4><p><b>와/과, 하고</b> 表示和；<b>나, 거나</b> 表示或者。</p></div>
+                <div class="grammar-item"><h4>方式 / 比喻</h4><p><b>로/으로</b> 表方式方向；<b>처럼/같이</b> 表像…一樣；<b>마다</b> 表每個。</p></div>
+                <div class="grammar-item"><h4>尊稱</h4><p><b>께서/께서는</b> 是主格與主題助詞的尊稱形式。</p></div>
+                <div class="grammar-item"><h4>特殊搭配</h4><p><b>아니다</b>、<b>되다</b> 前的名詞常搭配 <b>이/가</b>。</p></div>
+            </div>
+        </section>
+
+        <section id="sentencesPanel" class="content-panel active">
         <h2>圖片 image_2.png：主格、對照與受格助詞</h2>
 
         <section class="card"><h3 class="card-title">1. 主格與對照 (이/가, 은/는)</h3><div class="sentence-item"><div class="korean">운동장에서 영희(가) 무엇을 합니까?</div><div class="translation">在運動場，英熙（主詞）正在做什麼？</div><div class="word-meanings"><b>운동장</b>＝運動場、<b>영희</b>＝英熙、<b>무엇</b>＝什麼、<b>합니까</b>＝做嗎／做什麼呢</div><button class="play-btn" data-text="운동장에서 영희가 무엇을 합니까?">▶ 播放句子 1-1</button></div><div class="sentence-item"><div class="korean">운동장에서 영희(는) 조깅을 합니다.</div><div class="translation">在運動場，英熙（主題）正在慢跑。</div><div class="word-meanings"><b>운동장</b>＝運動場、<b>조깅</b>＝慢跑、<b>합니다</b>＝做／進行</div><button class="play-btn" data-text="운동장에서 영희는 조깅을 합니다.">▶ 播放句子 1-2</button></div><div class="explanation">가 用於標示句子的主詞，通常用於引出新資訊；는 用於對照或針對前面的主體進行補充敘述。</div></section>
@@ -270,6 +346,7 @@
         <section class="card"><h3 class="card-title">21. 或者 (나, 거나)</h3><div class="sentence-item"><div class="korean">아침에 우유(나) 두유를 마십니다.</div><div class="translation">早上喝牛奶「或」豆漿（名詞連接）。</div><div class="word-meanings"><b>아침</b>＝早上、<b>우유</b>＝牛奶、<b>두유</b>＝豆漿、<b>마십니다</b>＝喝</div><button class="play-btn" data-text="아침에 우유나 두유를 마십니다.">▶ 播放句子 21-1</button></div><div class="sentence-item"><div class="korean">밥을 먹(거나) 차를 마시십니다.</div><div class="translation">吃飯「或」喝茶（動詞連接）。</div><div class="word-meanings"><b>밥</b>＝飯、<b>먹거나</b>＝吃或、<b>차</b>＝茶、<b>마시십니다</b>＝喝（敬語）</div><button class="play-btn" data-text="밥을 먹거나 차를 마시십니다.">▶ 播放句子 21-2</button></div></section>
         <section class="card"><h3 class="card-title">22. 每個 (마다)</h3><div class="sentence-item"><div class="korean">토요일(마다) 한국어를 배웁니다.</div><div class="translation">「每個」星期六都學韓語。</div><div class="word-meanings"><b>토요일</b>＝星期六、<b>한국어</b>＝韓語、<b>배웁니다</b>＝學習</div><button class="play-btn" data-text="토요일마다 한국어를 배웁니다.">▶ 播放句子 22-1</button></div><div class="sentence-item"><div class="korean">집집(마다) 인터넷이 있습니다.</div><div class="translation">「每家每戶」都有網路。</div><div class="word-meanings"><b>집집마다</b>＝家家戶戶、<b>인터넷</b>＝網路、<b>있습니다</b>＝有</div><button class="play-btn" data-text="집집마다 인터넷이 있습니다.">▶ 播放句子 22-2</button></div></section>
         <section class="card"><h3 class="card-title">23. 像...一樣 (처럼, 같이)</h3><div class="sentence-item"><div class="korean">그녀는 꽃(처럼/같이) 예쁩니다.</div><div class="translation">她「像」花一樣漂亮。</div><div class="word-meanings"><b>그녀</b>＝她、<b>꽃</b>＝花、<b>처럼/같이</b>＝像…一樣、<b>예쁩니다</b>＝漂亮</div><button class="play-btn" data-text="그녀는 꽃처럼 예쁩니다.">▶ 播放句子 23-1</button></div><div class="sentence-item"><div class="korean">대만의 높은 산에서도 한국(처럼) 눈이 옵니다.</div><div class="translation">在台灣的高山上也會「像」韓國一樣下雪。</div><div class="word-meanings"><b>대만</b>＝台灣、<b>높은 산</b>＝高山、<b>한국</b>＝韓國、<b>눈</b>＝雪、<b>옵니다</b>＝下（雪／雨）</div><button class="play-btn" data-text="대만의 높은 산에서도 한국처럼 눈이 옵니다.">▶ 播放句子 23-2</button></div></section>
+        </section>
     </div>
 
     <script>
@@ -461,6 +538,18 @@
                 const tempButton = document.createElement('button');
                 tempButton.textContent = text;
                 playKorean(text, tempButton);
+            });
+        });
+
+        document.querySelectorAll('.panel-tab').forEach((tab) => {
+            tab.addEventListener('click', () => {
+                const targetId = tab.dataset.panel;
+
+                document.querySelectorAll('.panel-tab').forEach((item) => item.classList.remove('active'));
+                document.querySelectorAll('.content-panel').forEach((panel) => panel.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(targetId)?.classList.add('active');
             });
         });
 
