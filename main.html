@@ -186,6 +186,118 @@
             display: block;
         }
 
+        .page-container {
+            display: none;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .quiz-option {
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .quiz-option.correct {
+            border-color: #16a34a;
+            background: #dcfce7;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .quiz-option.wrong {
+            border-color: #dc2626;
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        body.dark-mode .quiz-option.correct {
+            background: #14532d;
+            color: #bbf7d0;
+            border-color: #22c55e;
+        }
+
+        body.dark-mode .quiz-option.wrong {
+            background: #450a0a;
+            color: #fecaca;
+            border-color: #ef4444;
+        }
+
+        .quiz-option.selected {
+            pointer-events: none;
+        }
+
+        .quiz-result {
+            display: none;
+            margin-top: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        .quiz-result.correct-result {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .quiz-result.wrong-result {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        body.dark-mode .quiz-result.correct-result {
+            background: #14532d;
+            color: #bbf7d0;
+            border-color: #22c55e;
+        }
+
+        body.dark-mode .quiz-result.wrong-result {
+            background: #450a0a;
+            color: #fecaca;
+            border-color: #ef4444;
+        }
+
+        .score-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            margin-bottom: 20px;
+            background: var(--control-bg);
+            border: 1px solid var(--control-border);
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+
+        .score-bar b {
+            color: var(--primary);
+        }
+
         .grammar-summary {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -335,11 +447,11 @@
     <aside class="sidebar">
         <h2 class="sidebar-title">教材頁面</h2>
         <nav class="page-list" aria-label="Page navigation">
-            <a class="page-link active" href="#" aria-current="page">Page 1：助詞整理</a>
-            <a class="page-link" href="#" onclick="return false;">Page 2：尚未加入</a>
+            <a class="page-link active" href="#" data-page="page1" aria-current="page">Page 1：助詞整理</a>
+            <a class="page-link" href="#" data-page="page2">Page 2：閱讀理解</a>
             <a class="page-link" href="#" onclick="return false;">Page 3：尚未加入</a>
         </nav>
-        <p class="page-note">左側會顯示目前所在頁面。現在這一頁是 <b>Page 1</b>。</p>
+        <p class="page-note" id="pageNote">目前所在頁面：<b>Page 1</b></p>
     </aside>
 
     <div class="container">
@@ -371,6 +483,9 @@
                 <input id="rateValue" type="text" value="0.90x" readonly>
             </div>
         </section>
+
+        <!-- ===== PAGE 1 ===== -->
+        <div id="page1" class="page-container active">
 
         <section class="panel-tabs">
             <button class="panel-tab active" data-panel="sentencesPanel" type="button">句子練習</button>
@@ -422,6 +537,391 @@
         <section class="card"><h3 class="card-title">22. 每個 (마다)</h3><div class="sentence-item"><div class="korean">토요일(마다) 한국어를 배웁니다.</div><div class="translation">「每個」星期六都學韓語。</div><div class="word-meanings"><b>토요일</b>＝星期六、<b>한국어</b>＝韓語、<b>배웁니다</b>＝學習</div><button class="play-btn" data-text="토요일마다 한국어를 배웁니다.">▶ 播放句子 22-1</button></div><div class="sentence-item"><div class="korean">집집(마다) 인터넷이 있습니다.</div><div class="translation">「每家每戶」都有網路。</div><div class="word-meanings"><b>집집마다</b>＝家家戶戶、<b>인터넷</b>＝網路、<b>있습니다</b>＝有</div><button class="play-btn" data-text="집집마다 인터넷이 있습니다.">▶ 播放句子 22-2</button></div></section>
         <section class="card"><h3 class="card-title">23. 像...一樣 (처럼, 같이)</h3><div class="sentence-item"><div class="korean">그녀는 꽃(처럼/같이) 예쁩니다.</div><div class="translation">她「像」花一樣漂亮。</div><div class="word-meanings"><b>그녀</b>＝她、<b>꽃</b>＝花、<b>처럼/같이</b>＝像…一樣、<b>예쁩니다</b>＝漂亮</div><button class="play-btn" data-text="그녀는 꽃처럼 예쁩니다.">▶ 播放句子 23-1</button></div><div class="sentence-item"><div class="korean">대만의 높은 산에서도 한국(처럼) 눈이 옵니다.</div><div class="translation">在台灣的高山上也會「像」韓國一樣下雪。</div><div class="word-meanings"><b>대만</b>＝台灣、<b>높은 산</b>＝高山、<b>한국</b>＝韓國、<b>눈</b>＝雪、<b>옵니다</b>＝下（雪／雨）</div><button class="play-btn" data-text="대만의 높은 산에서도 한국처럼 눈이 옵니다.">▶ 播放句子 23-2</button></div></section>
         </section>
+        </div><!-- end page1 -->
+
+        <!-- ===== PAGE 2 ===== -->
+        <div id="page2" class="page-container">
+        <h2>읽기 1 — 閱讀理解選擇題</h2>
+        <p class="intro">무엇에 대한 내용입니까? 알맞은 것을 고르십시오. (1~21)<br>讀完短文後，判斷主題是什麼，從四個選項中選出正確答案。點選選項即可作答！</p>
+
+        <div class="score-bar">得分：<b id="quizScore">0</b> / <b id="quizTotal">22</b>　　已作答：<b id="quizAnswered">0</b></div>
+
+        <section class="card" data-answer="1">
+            <h3 class="card-title">보기（範例）</h3>
+            <div class="sentence-item">
+                <div class="korean">아버지는 회사원입니다. 어머니는 공무원입니다.</div>
+                <div class="translation">父親是上班族。母親是公務員。</div>
+                <div class="word-meanings"><b>아버지</b>＝父親、<b>회사원</b>＝上班族、<b>어머니</b>＝母親、<b>공무원</b>＝公務員</div>
+                <button class="play-btn" data-text="아버지는 회사원입니다. 어머니는 공무원입니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">직업（職業）</button>
+                <button class="quiz-option" data-val="2">형제（兄弟）</button>
+                <button class="quiz-option" data-val="3">회사（公司）</button>
+                <button class="quiz-option" data-val="4">직위（職位）</button>
+            </div>
+            <div class="quiz-result">答案：(1) 직업（職業）— 描述的是父母的職業。</div>
+        </section>
+
+        <section class="card" data-answer="3">
+            <h3 class="card-title">1.</h3>
+            <div class="sentence-item">
+                <div class="korean">저는 치마를 자주 입습니다. 바지는 거의 안 입습니다.</div>
+                <div class="translation">我經常穿裙子。幾乎不穿褲子。</div>
+                <div class="word-meanings"><b>치마</b>＝裙子、<b>자주</b>＝經常、<b>입습니다</b>＝穿、<b>바지</b>＝褲子、<b>거의</b>＝幾乎</div>
+                <button class="play-btn" data-text="저는 치마를 자주 입습니다. 바지는 거의 안 입습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">약（藥）</button>
+                <button class="quiz-option" data-val="2">방（房間）</button>
+                <button class="quiz-option" data-val="3">옷（衣服）</button>
+                <button class="quiz-option" data-val="4">방（房間）</button>
+            </div>
+            <div class="quiz-result">答案：(3) 옷（衣服）— 描述穿著習慣。</div>
+        </section>
+
+        <section class="card" data-answer="1">
+            <h3 class="card-title">2.</h3>
+            <div class="sentence-item">
+                <div class="korean">저는 대만에서 삽니다. 친구는 일본에서 왔습니다.</div>
+                <div class="translation">我住在台灣。朋友從日本來。</div>
+                <div class="word-meanings"><b>대만</b>＝台灣、<b>삽니다</b>＝住、<b>친구</b>＝朋友、<b>일본</b>＝日本、<b>왔습니다</b>＝來了</div>
+                <button class="play-btn" data-text="저는 대만에서 삽니다. 친구는 일본에서 왔습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">국적（國籍）</button>
+                <button class="quiz-option" data-val="2">여행（旅行）</button>
+                <button class="quiz-option" data-val="3">관계（關係）</button>
+                <button class="quiz-option" data-val="4">사람（人）</button>
+            </div>
+            <div class="quiz-result">答案：(1) 국적（國籍）— 描述居住國家。</div>
+        </section>
+
+        <section class="card" data-answer="3">
+            <h3 class="card-title">3.</h3>
+            <div class="sentence-item">
+                <div class="korean">오늘은 비가 내리겠습니다. 그리고 흐리겠습니다.</div>
+                <div class="translation">今天會下雨。而且會陰天。</div>
+                <div class="word-meanings"><b>오늘</b>＝今天、<b>비</b>＝雨、<b>내리겠습니다</b>＝會下、<b>흐리겠습니다</b>＝會陰天</div>
+                <button class="play-btn" data-text="오늘은 비가 내리겠습니다. 그리고 흐리겠습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">요일（星期）</button>
+                <button class="quiz-option" data-val="2">계절（季節）</button>
+                <button class="quiz-option" data-val="3">날씨（天氣）</button>
+                <button class="quiz-option" data-val="4">여름（夏天）</button>
+            </div>
+            <div class="quiz-result">答案：(3) 날씨（天氣）— 描述天氣狀況。</div>
+        </section>
+
+        <section class="card" data-answer="3">
+            <h3 class="card-title">4.</h3>
+            <div class="sentence-item">
+                <div class="korean">언니는 두 명 있습니다. 오빠는 한 명 있습니다.</div>
+                <div class="translation">有兩個姐姐。有一個哥哥。</div>
+                <div class="word-meanings"><b>언니</b>＝姐姐、<b>두 명</b>＝兩個人、<b>오빠</b>＝哥哥、<b>한 명</b>＝一個人</div>
+                <button class="play-btn" data-text="언니는 두 명 있습니다. 오빠는 한 명 있습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">생일（生日）</button>
+                <button class="quiz-option" data-val="2">친구（朋友）</button>
+                <button class="quiz-option" data-val="3">가족（家人）</button>
+                <button class="quiz-option" data-val="4">부모（父母）</button>
+            </div>
+            <div class="quiz-result">答案：(3) 가족（家人）— 描述家庭成員。</div>
+        </section>
+
+        <section class="card" data-answer="4">
+            <h3 class="card-title">5.</h3>
+            <div class="sentence-item">
+                <div class="korean">저는 4월 15일에 태어났습니다. 친구는 5월 18일에 태어났습니다.</div>
+                <div class="translation">我在4月15日出生。朋友在5月18日出生。</div>
+                <div class="word-meanings"><b>태어났습니다</b>＝出生了、<b>4월</b>＝四月、<b>5월</b>＝五月</div>
+                <button class="play-btn" data-text="저는 4월 15일에 태어났습니다. 친구는 5월 18일에 태어났습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">달력（日曆）</button>
+                <button class="quiz-option" data-val="2">휴일（假日）</button>
+                <button class="quiz-option" data-val="3">사람（人）</button>
+                <button class="quiz-option" data-val="4">생일（生日）</button>
+            </div>
+            <div class="quiz-result">答案：(4) 생일（生日）— 描述出生日期。</div>
+        </section>
+
+        <section class="card" data-answer="2">
+            <h3 class="card-title">6.</h3>
+            <div class="sentence-item">
+                <div class="korean">삼계탕이 있습니다. 비빔밥도 있습니다.</div>
+                <div class="translation">有蔘雞湯。也有拌飯。</div>
+                <div class="word-meanings"><b>삼계탕</b>＝蔘雞湯、<b>비빔밥</b>＝拌飯、<b>있습니다</b>＝有</div>
+                <button class="play-btn" data-text="삼계탕이 있습니다. 비빔밥도 있습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">취미（興趣）</button>
+                <button class="quiz-option" data-val="2">음식（食物）</button>
+                <button class="quiz-option" data-val="3">장소（場所）</button>
+                <button class="quiz-option" data-val="4">가격（價格）</button>
+            </div>
+            <div class="quiz-result">答案：(2) 음식（食物）— 描述食物種類。</div>
+        </section>
+
+        <section class="card" data-answer="3">
+            <h3 class="card-title">7.</h3>
+            <div class="sentence-item">
+                <div class="korean">여름 방학 때는 수영을 배우려고 합니다. 아르바이트도 하려고 합니다.</div>
+                <div class="translation">暑假時打算學游泳。也打算打工。</div>
+                <div class="word-meanings"><b>여름 방학</b>＝暑假、<b>수영</b>＝游泳、<b>배우려고</b>＝打算學、<b>아르바이트</b>＝打工</div>
+                <button class="play-btn" data-text="여름 방학 때는 수영을 배우려고 합니다. 아르바이트도 하려고 합니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">건강（健康）</button>
+                <button class="quiz-option" data-val="2">날씨（天氣）</button>
+                <button class="quiz-option" data-val="3">계획（計畫）</button>
+                <button class="quiz-option" data-val="4">숙제（作業）</button>
+            </div>
+            <div class="quiz-result">答案：(3) 계획（計畫）— 描述暑假計畫。</div>
+        </section>
+
+        <section class="card" data-answer="2">
+            <h3 class="card-title">8.</h3>
+            <div class="sentence-item">
+                <div class="korean">한국어 수업은 월요일에 있습니다. 수영 수업은 금요일에 있습니다.</div>
+                <div class="translation">韓語課在星期一。游泳課在星期五。</div>
+                <div class="word-meanings"><b>한국어 수업</b>＝韓語課、<b>월요일</b>＝星期一、<b>수영 수업</b>＝游泳課、<b>금요일</b>＝星期五</div>
+                <button class="play-btn" data-text="한국어 수업은 월요일에 있습니다. 수영 수업은 금요일에 있습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">날짜（日期）</button>
+                <button class="quiz-option" data-val="2">요일（星期）</button>
+                <button class="quiz-option" data-val="3">주말（週末）</button>
+                <button class="quiz-option" data-val="4">전공（主修）</button>
+            </div>
+            <div class="quiz-result">答案：(2) 요일（星期）— 描述星期幾上什麼課。</div>
+        </section>
+
+        <section class="card" data-answer="1">
+            <h3 class="card-title">9.</h3>
+            <div class="sentence-item">
+                <div class="korean">저는 피아노를 칠 수 있습니다. 피아노를 자주 칩니다.</div>
+                <div class="translation">我會彈鋼琴。經常彈鋼琴。</div>
+                <div class="word-meanings"><b>피아노</b>＝鋼琴、<b>칠 수 있습니다</b>＝會彈、<b>자주</b>＝經常、<b>칩니다</b>＝彈</div>
+                <button class="play-btn" data-text="저는 피아노를 칠 수 있습니다. 피아노를 자주 칩니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">취미（興趣）</button>
+                <button class="quiz-option" data-val="2">여행（旅行）</button>
+                <button class="quiz-option" data-val="3">날씨（天氣）</button>
+                <button class="quiz-option" data-val="4">장소（場所）</button>
+            </div>
+            <div class="quiz-result">答案：(1) 취미（興趣）— 描述興趣愛好。</div>
+        </section>
+
+        <section class="card" data-answer="4">
+            <h3 class="card-title">10.</h3>
+            <div class="sentence-item">
+                <div class="korean">저는 일곱 시에 밥을 먹습니다. 여덟 시에 학교에 갑니다.</div>
+                <div class="translation">我七點吃飯。八點去學校。</div>
+                <div class="word-meanings"><b>일곱 시</b>＝七點、<b>밥</b>＝飯、<b>먹습니다</b>＝吃、<b>여덟 시</b>＝八點、<b>학교</b>＝學校</div>
+                <button class="play-btn" data-text="저는 일곱 시에 밥을 먹습니다. 여덟 시에 학교에 갑니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">식사（用餐）</button>
+                <button class="quiz-option" data-val="2">교실（教室）</button>
+                <button class="quiz-option" data-val="3">숙제（作業）</button>
+                <button class="quiz-option" data-val="4">시간（時間）</button>
+            </div>
+            <div class="quiz-result">答案：(4) 시간（時間）— 描述時間安排。</div>
+        </section>
+
+        <section class="card" data-answer="3">
+            <h3 class="card-title">11.</h3>
+            <div class="sentence-item">
+                <div class="korean">다음 주 주말에 친구를 만날 겁니다. 영화를 볼 겁니다.</div>
+                <div class="translation">下週末要見朋友。要看電影。</div>
+                <div class="word-meanings"><b>다음 주</b>＝下週、<b>주말</b>＝週末、<b>친구</b>＝朋友、<b>만날 겁니다</b>＝要見、<b>영화</b>＝電影</div>
+                <button class="play-btn" data-text="다음 주 주말에 친구를 만날 겁니다. 영화를 볼 겁니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">극장（劇場）</button>
+                <button class="quiz-option" data-val="2">취미（興趣）</button>
+                <button class="quiz-option" data-val="3">약속（約定）</button>
+                <button class="quiz-option" data-val="4">모임（聚會）</button>
+            </div>
+            <div class="quiz-result">答案：(3) 약속（約定）— 描述與朋友的約定。</div>
+        </section>
+
+        <section class="card" data-answer="4">
+            <h3 class="card-title">12.</h3>
+            <div class="sentence-item">
+                <div class="korean">저는 6월 16일부터 20일까지 베트남 여행을 가려고 합니다.</div>
+                <div class="translation">我打算從6月16日到20日去越南旅行。</div>
+                <div class="word-meanings"><b>6월</b>＝六月、<b>베트남</b>＝越南、<b>여행</b>＝旅行、<b>가려고 합니다</b>＝打算去</div>
+                <button class="play-btn" data-text="저는 6월 16일부터 20일까지 베트남 여행을 가려고 합니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">날짜（日期）</button>
+                <button class="quiz-option" data-val="2">주말（週末）</button>
+                <button class="quiz-option" data-val="3">날씨（天氣）</button>
+                <button class="quiz-option" data-val="4">여행（旅行）</button>
+            </div>
+            <div class="quiz-result">答案：(4) 여행（旅行）— 描述旅行計畫。</div>
+        </section>
+
+        <section class="card" data-answer="2">
+            <h3 class="card-title">13.</h3>
+            <div class="sentence-item">
+                <div class="korean">한국에는 봄, 여름, 가을, 겨울이 있습니다. 모두 사계절이 있습니다.</div>
+                <div class="translation">韓國有春、夏、秋、冬。共有四季。</div>
+                <div class="word-meanings"><b>봄</b>＝春、<b>여름</b>＝夏、<b>가을</b>＝秋、<b>겨울</b>＝冬、<b>사계절</b>＝四季</div>
+                <button class="play-btn" data-text="한국에는 봄, 여름, 가을, 겨울이 있습니다. 모두 사계절이 있습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">날씨（天氣）</button>
+                <button class="quiz-option" data-val="2">계절（季節）</button>
+                <button class="quiz-option" data-val="3">나라（國家）</button>
+                <button class="quiz-option" data-val="4">휴일（假日）</button>
+            </div>
+            <div class="quiz-result">答案：(2) 계절（季節）— 描述四季。</div>
+        </section>
+
+        <section class="card" data-answer="3">
+            <h3 class="card-title">14.</h3>
+            <div class="sentence-item">
+                <div class="korean">내일은 출근하지 않아도 됩니다. 집에서 쉽니다.</div>
+                <div class="translation">明天不用上班。在家休息。</div>
+                <div class="word-meanings"><b>내일</b>＝明天、<b>출근</b>＝上班、<b>집</b>＝家、<b>쉽니다</b>＝休息</div>
+                <button class="play-btn" data-text="내일은 출근하지 않아도 됩니다. 집에서 쉽니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">직장（職場）</button>
+                <button class="quiz-option" data-val="2">직업（職業）</button>
+                <button class="quiz-option" data-val="3">휴일（假日）</button>
+                <button class="quiz-option" data-val="4">회사（公司）</button>
+            </div>
+            <div class="quiz-result">答案：(3) 휴일（假日）— 描述放假休息。</div>
+        </section>
+
+        <section class="card" data-answer="4">
+            <h3 class="card-title">15.</h3>
+            <div class="sentence-item">
+                <div class="korean">한국에는 8월에 학교에 가지 않아도 됩니다. 수업이 없습니다.</div>
+                <div class="translation">在韓國8月不用去學校。沒有課。</div>
+                <div class="word-meanings"><b>8월</b>＝八月、<b>학교</b>＝學校、<b>수업</b>＝課程、<b>없습니다</b>＝沒有</div>
+                <button class="play-btn" data-text="한국에는 8월에 학교에 가지 않아도 됩니다. 수업이 없습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">약속（約定）</button>
+                <button class="quiz-option" data-val="2">휴일（假日）</button>
+                <button class="quiz-option" data-val="3">날짜（日期）</button>
+                <button class="quiz-option" data-val="4">방학（放假）</button>
+            </div>
+            <div class="quiz-result">答案：(4) 방학（放假）— 描述學校放假。</div>
+        </section>
+
+        <section class="card" data-answer="1">
+            <h3 class="card-title">16.</h3>
+            <div class="sentence-item">
+                <div class="korean">저는 매일 달리기를 합니다. 주말에는 수영도 합니다.</div>
+                <div class="translation">我每天跑步。週末也游泳。</div>
+                <div class="word-meanings"><b>매일</b>＝每天、<b>달리기</b>＝跑步、<b>주말</b>＝週末、<b>수영</b>＝游泳</div>
+                <button class="play-btn" data-text="저는 매일 달리기를 합니다. 주말에는 수영도 합니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">운동（運動）</button>
+                <button class="quiz-option" data-val="2">날짜（日期）</button>
+                <button class="quiz-option" data-val="3">주말（週末）</button>
+                <button class="quiz-option" data-val="4">장소（場所）</button>
+            </div>
+            <div class="quiz-result">答案：(1) 운동（運動）— 描述運動習慣。</div>
+        </section>
+
+        <section class="card" data-answer="2">
+            <h3 class="card-title">17.</h3>
+            <div class="sentence-item">
+                <div class="korean">여름에는 친구와 같이 태국에 갑니다. 겨울에는 가족과 같이 일본에 갑니다.</div>
+                <div class="translation">夏天和朋友一起去泰國。冬天和家人一起去日本。</div>
+                <div class="word-meanings"><b>여름</b>＝夏天、<b>친구</b>＝朋友、<b>태국</b>＝泰國、<b>겨울</b>＝冬天、<b>가족</b>＝家人、<b>일본</b>＝日本</div>
+                <button class="play-btn" data-text="여름에는 친구와 같이 태국에 갑니다. 겨울에는 가족과 같이 일본에 갑니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">날씨（天氣）</button>
+                <button class="quiz-option" data-val="2">여행（旅行）</button>
+                <button class="quiz-option" data-val="3">취미（興趣）</button>
+                <button class="quiz-option" data-val="4">회사（公司）</button>
+            </div>
+            <div class="quiz-result">答案：(2) 여행（旅行）— 描述旅行計畫。</div>
+        </section>
+
+        <section class="card" data-answer="2">
+            <h3 class="card-title">18.</h3>
+            <div class="sentence-item">
+                <div class="korean">어제 밤부터 머리가 아픕니다. 열도 납니다.</div>
+                <div class="translation">從昨晚開始頭痛。也發燒了。</div>
+                <div class="word-meanings"><b>어제 밤</b>＝昨晚、<b>머리</b>＝頭、<b>아픕니다</b>＝痛、<b>열</b>＝發燒、<b>납니다</b>＝出現</div>
+                <button class="play-btn" data-text="어제 밤부터 머리가 아픕니다. 열도 납니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">공원（公園）</button>
+                <button class="quiz-option" data-val="2">약국（藥局）</button>
+                <button class="quiz-option" data-val="3">장소（場所）</button>
+                <button class="quiz-option" data-val="4">서점（書店）</button>
+            </div>
+            <div class="quiz-result">答案：(2) 약국（藥局）— 身體不適，需要去藥局。</div>
+        </section>
+
+        <section class="card" data-answer="4">
+            <h3 class="card-title">19.</h3>
+            <div class="sentence-item">
+                <div class="korean">비가 자주 내립니다. 그리고 아주 덥습니다.</div>
+                <div class="translation">經常下雨。而且非常熱。</div>
+                <div class="word-meanings"><b>비</b>＝雨、<b>자주</b>＝經常、<b>내립니다</b>＝下、<b>아주</b>＝非常、<b>덥습니다</b>＝熱</div>
+                <button class="play-btn" data-text="비가 자주 내립니다. 그리고 아주 덥습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">주소（地址）</button>
+                <button class="quiz-option" data-val="2">편지（信）</button>
+                <button class="quiz-option" data-val="3">나라（國家）</button>
+                <button class="quiz-option" data-val="4">여름（夏天）</button>
+            </div>
+            <div class="quiz-result">答案：(4) 여름（夏天）— 描述夏天的天氣特徵。</div>
+        </section>
+
+        <section class="card" data-answer="1">
+            <h3 class="card-title">20.</h3>
+            <div class="sentence-item">
+                <div class="korean">딸기를 먹었습니다. 딸기가 정말 싱싱하고 맛있었습니다.</div>
+                <div class="translation">吃了草莓。草莓真的很新鮮又好吃。</div>
+                <div class="word-meanings"><b>딸기</b>＝草莓、<b>먹었습니다</b>＝吃了、<b>싱싱하고</b>＝新鮮又、<b>맛있었습니다</b>＝好吃</div>
+                <button class="play-btn" data-text="딸기를 먹었습니다. 딸기가 정말 싱싱하고 맛있었습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">과일（水果）</button>
+                <button class="quiz-option" data-val="2">쇼핑（購物）</button>
+                <button class="quiz-option" data-val="3">마트（超市）</button>
+                <button class="quiz-option" data-val="4">선물（禮物）</button>
+            </div>
+            <div class="quiz-result">答案：(1) 과일（水果）— 描述水果。</div>
+        </section>
+
+        <section class="card" data-answer="2">
+            <h3 class="card-title">21.</h3>
+            <div class="sentence-item">
+                <div class="korean">오늘은 결혼 기념일입니다. 가족들이 축하해 줬습니다.</div>
+                <div class="translation">今天是結婚紀念日。家人們祝賀了。</div>
+                <div class="word-meanings"><b>결혼</b>＝結婚、<b>기념일</b>＝紀念日、<b>가족들</b>＝家人們、<b>축하해 줬습니다</b>＝祝賀了</div>
+                <button class="play-btn" data-text="오늘은 결혼 기념일입니다. 가족들이 축하해 줬습니다.">▶ 播放句子</button>
+            </div>
+            <div class="quiz-options">
+                <button class="quiz-option" data-val="1">시간（時間）</button>
+                <button class="quiz-option" data-val="2">휴일（紀念日）</button>
+                <button class="quiz-option" data-val="3">선물（禮物）</button>
+                <button class="quiz-option" data-val="4">쇼핑（購物）</button>
+            </div>
+            <div class="quiz-result">答案：(2) 휴일（紀念日）— 描述結婚紀念日。</div>
+        </section>
+
+        </div><!-- end page2 -->
+
     </div>
     </div>
 
@@ -626,6 +1126,74 @@
 
                 tab.classList.add('active');
                 document.getElementById(targetId)?.classList.add('active');
+            });
+        });
+
+        // === Page Navigation ===
+        const pageLabels = { page1: 'Page 1', page2: 'Page 2' };
+
+        document.querySelectorAll('.page-link[data-page]').forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPage = link.dataset.page;
+                if (!document.getElementById(targetPage)) return;
+
+                document.querySelectorAll('.page-container').forEach((p) => p.classList.remove('active'));
+                document.getElementById(targetPage).classList.add('active');
+
+                document.querySelectorAll('.page-link').forEach((l) => {
+                    l.classList.remove('active');
+                    l.removeAttribute('aria-current');
+                });
+                link.classList.add('active');
+                link.setAttribute('aria-current', 'page');
+
+                const note = document.getElementById('pageNote');
+                if (note) note.innerHTML = `目前所在頁面：<b>${pageLabels[targetPage] || targetPage}</b>`;
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // === Quiz Interaction ===
+        let quizScore = 0;
+        let quizAnswered = 0;
+        const quizCards = document.querySelectorAll('#page2 .card[data-answer]');
+        const totalQuestions = quizCards.length;
+
+        document.getElementById('quizTotal').textContent = totalQuestions;
+
+        quizCards.forEach((card) => {
+            const correctAnswer = card.dataset.answer;
+            const options = card.querySelectorAll('.quiz-option');
+            const resultDiv = card.querySelector('.quiz-result');
+
+            options.forEach((opt) => {
+                opt.addEventListener('click', () => {
+                    if (card.classList.contains('answered')) return;
+                    card.classList.add('answered');
+
+                    const chosen = opt.dataset.val;
+                    const isCorrect = chosen === correctAnswer;
+
+                    options.forEach((o) => {
+                        o.classList.add('selected');
+                        if (o.dataset.val === correctAnswer) o.classList.add('correct');
+                    });
+
+                    if (!isCorrect) {
+                        opt.classList.add('wrong');
+                        resultDiv.classList.add('wrong-result');
+                    } else {
+                        quizScore++;
+                        resultDiv.classList.add('correct-result');
+                    }
+
+                    quizAnswered++;
+                    resultDiv.classList.add('show');
+                    document.getElementById('quizScore').textContent = quizScore;
+                    document.getElementById('quizAnswered').textContent = quizAnswered;
+                });
             });
         });
 
