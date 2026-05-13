@@ -156,6 +156,9 @@
 
         .word-meanings b {
             color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
         }
 
         .play-btn {
@@ -447,6 +450,17 @@
         document.querySelectorAll('.play-btn').forEach((button) => {
             button.addEventListener('click', () => {
                 playKorean(button.dataset.text, button);
+            });
+        });
+
+        document.querySelectorAll('.word-meanings b').forEach((word) => {
+            word.addEventListener('click', () => {
+                const text = word.textContent.trim();
+                if (!text) return;
+
+                const tempButton = document.createElement('button');
+                tempButton.textContent = text;
+                playKorean(text, tempButton);
             });
         });
 
