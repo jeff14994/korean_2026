@@ -59,8 +59,16 @@ korean_2026/
 | **Page 2 題號標示** | 播放按鈕顯示對應題號（如「▶ 播放句子 보기」、「▶ 播放句子 1」） |
 | **選項發音預覽** | Page 2 每題選項下方新增「🔊 點擊聽發音」區域，可先聽韓語發音再作答，不會觸發答題 |
 | **防止誤選文字** | 單字與發音按鈕加入 `user-select: none`，點擊時不會意外選取文字 |
-| **事件委派機制** | 使用 event delegation 確保動態修改 DOM 後事件監聽器仍然有效 |
+| **事件委派機制** | 使用 event delegation 確保動態修改 DOM 後事件監聯器仍然有效 |
 | **15일/18일 翻譯補充** | Page 2 第 5 題補充 15일＝15號、18일＝18號 的單字翻譯 |
+
+### v1.2 — Bug Fixes (2026-05-13)
+
+| 修復項目 | 說明 |
+|---------|------|
+| **深色模式卡片標題不可見** | `.card-title` 原本硬編碼為 `#111827`（深色），在深色模式下幾乎看不到。改為 `var(--text)` 自動適應主題 |
+| **Google TTS 在 http:// 無法播放** | 透過 `http://127.0.0.1:8000` 存取時，瀏覽器會帶 `Referer` 標頭，Google 會拒絕請求。加入 `<meta name="referrer" content="no-referrer">` 移除 Referer，使 http:// 與 file:// 行為一致 |
+| **GitHub Pages 相容性** | 同上修復，`no-referrer` meta 標籤也解決了 GitHub Pages 上 Google TTS 被 CORS 阻擋的問題 |
 
 ## 技術細節
 
