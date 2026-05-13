@@ -212,8 +212,32 @@
             transition: all 0.2s;
         }
 
-        .quiz-option:hover {
+        .quiz-option:hover:not(.selected) {
             border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .vocab-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 6px 0 4px;
+        }
+
+        .vocab-preview-btn {
+            padding: 4px 10px;
+            border: 1px dashed var(--primary);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.88rem;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: all 0.15s;
+        }
+
+        .vocab-preview-btn:hover {
             background: var(--primary-light);
         }
 
@@ -378,6 +402,8 @@
             cursor: pointer;
             text-decoration: underline;
             text-underline-offset: 2px;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .play-btn {
@@ -1184,15 +1210,18 @@
             });
         });
 
-        document.querySelectorAll('.word-meanings b').forEach((word) => {
-            word.addEventListener('click', () => {
-                const text = word.textContent.trim();
-                if (!text) return;
+        // Use event delegation for word-meanings b clicks (survives innerHTML rewrites)
+        document.addEventListener('click', (e) => {
+            const word = e.target.closest('.word-meanings b');
+            if (!word) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const text = word.textContent.trim();
+            if (!text) return;
 
-                const tempButton = document.createElement('button');
-                tempButton.textContent = text;
-                playKorean(text, tempButton);
-            });
+            const tempButton = document.createElement('button');
+            tempButton.textContent = text;
+            playKorean(text, tempButton);
         });
 
         document.querySelectorAll('.panel-tab').forEach((tab) => {
@@ -1259,6 +1288,34 @@
                 const num = title.textContent.replace(/（.*）/, '').trim().replace(/\.$/, '');
                 btn.textContent = '▶ 播放句子 ' + num;
             }
+        });
+
+        // === Generate vocab preview buttons for quiz options ===
+        document.querySelectorAll('#page2 .quiz-options').forEach((optionsDiv) => {
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'vocab-preview';
+            const label = document.createElement('span');
+            label.textContent = '🔊 點擊聽發音：';
+            label.style.fontSize = '0.85rem';
+            label.style.color = 'var(--muted)';
+            previewDiv.appendChild(label);
+
+            optionsDiv.querySelectorAll('.quiz-option').forEach((opt) => {
+                // Extract Korean text only (remove Chinese in parentheses)
+                const koreanText = opt.textContent.replace(/（[^）]+）/g, '').trim();
+                if (!koreanText) return;
+                const btn = document.createElement('button');
+                btn.className = 'vocab-preview-btn';
+                btn.textContent = '🔈 ' + koreanText;
+                btn.type = 'button';
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    playKorean(koreanText, btn);
+                });
+                previewDiv.appendChild(btn);
+            });
+
+            optionsDiv.after(previewDiv);
         });
 
         // === Quiz Interaction ===
