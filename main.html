@@ -428,6 +428,20 @@
             border-color: var(--primary);
         }
 
+        body.hide-chinese .translation,
+        body.hide-chinese .word-meanings,
+        body.hide-chinese .explanation,
+        body.hide-chinese .quiz-result.show,
+        body.hide-chinese .quiz-result {
+            display: none !important;
+        }
+
+        body.hide-chinese .chi {
+            display: none;
+        }
+
+        body.hide-chinese .sentence-item:last-child { margin-bottom: 0; }
+
         @media (max-width: 900px) {
             .app-shell {
                 grid-template-columns: 1fr;
@@ -457,7 +471,10 @@
     <div class="container">
         <div class="top-bar">
             <h1>韓語助詞例句整理</h1>
-            <button id="themeToggle" class="theme-toggle" type="button">🌙 深色模式</button>
+            <div style="display:flex;gap:8px;">
+                <button id="chineseToggle" class="theme-toggle" type="button">🙈 隱藏中文</button>
+                <button id="themeToggle" class="theme-toggle" type="button">🌙 深色模式</button>
+            </div>
         </div>
         <p class="intro">依照 page1.md 內容整理。每一個編號中的句子都拆成獨立播放按鈕，方便逐句練習與聆聽。</p>
         <p class="audio-note">語音已改為優先使用線上韓語 TTS 音訊，以提升播放品質；若無法載入，會自動改用瀏覽器內建語音。並補充句中重點單字意思，方便一起記憶。</p>
@@ -1098,6 +1115,18 @@
             const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
             applyTheme(nextTheme);
             localStorage.setItem(themeStorageKey, nextTheme);
+        });
+
+        // === Chinese Toggle ===
+        // Wrap fullwidth-parenthesized Chinese text in .chi spans for hiding
+        document.querySelectorAll('.quiz-option, #page2 .card-title, .score-bar, .quiz-result').forEach(function(el) {
+            el.innerHTML = el.innerHTML.replace(/（[^）]+）/g, '<span class="chi">$&</span>');
+        });
+
+        document.getElementById('chineseToggle')?.addEventListener('click', () => {
+            const isHidden = document.body.classList.toggle('hide-chinese');
+            const btn = document.getElementById('chineseToggle');
+            btn.textContent = isHidden ? '👀 顯示中文' : '🙈 隱藏中文';
         });
 
         document.querySelectorAll('.play-btn').forEach((button) => {
