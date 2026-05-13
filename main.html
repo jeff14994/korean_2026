@@ -1002,11 +1002,12 @@
         function applyTheme(theme) {
             const isDark = theme === 'dark';
             document.body.classList.toggle('dark-mode', isDark);
+            const label = isDark ? '☀️ 淺色模式' : '🌙 深色模式';
 
             const toggle = document.getElementById('themeToggle');
-            if (toggle) {
-                toggle.textContent = isDark ? '☀️ 淺色模式' : '🌙 深色模式';
-            }
+            if (toggle) toggle.textContent = label;
+            const floatingToggle = document.getElementById('floatingThemeToggle');
+            if (floatingToggle) floatingToggle.textContent = label;
         }
 
         function initializeTheme() {
@@ -1206,14 +1207,26 @@
             });
         });
 
-        // === Page Navigation ===
+        // === Page Navigation (remember scroll position) ===
         const pageLabels = { page1: 'Page 1', page2: 'Page 2' };
+        const pageScrollPositions = {};
+
+        function getCurrentPageId() {
+            const active = document.querySelector('.page-container.active');
+            return active ? active.id : null;
+        }
 
         document.querySelectorAll('.page-link[data-page]').forEach((link) => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetPage = link.dataset.page;
                 if (!document.getElementById(targetPage)) return;
+
+                // Save current page scroll position
+                const currentPage = getCurrentPageId();
+                if (currentPage) {
+                    pageScrollPositions[currentPage] = window.scrollY;
+                }
 
                 document.querySelectorAll('.page-container').forEach((p) => p.classList.remove('active'));
                 document.getElementById(targetPage).classList.add('active');
@@ -1228,7 +1241,13 @@
                 const note = document.getElementById('pageNote');
                 if (note) note.innerHTML = `目前所在頁面：<b>${pageLabels[targetPage] || targetPage}</b>`;
 
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Restore saved scroll position or go to top
+                const savedPos = pageScrollPositions[targetPage];
+                if (savedPos !== undefined) {
+                    requestAnimationFrame(() => window.scrollTo({ top: savedPos, behavior: 'instant' }));
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                }
             });
         });
 
