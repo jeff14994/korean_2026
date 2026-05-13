@@ -465,7 +465,7 @@
             z-index: 1000;
         }
 
-        .floating-controls button {
+        .floating-controls > button {
             border: 1px solid var(--border);
             background: var(--card);
             color: var(--text);
@@ -477,9 +477,51 @@
             transition: all 0.2s;
         }
 
-        .floating-controls button:hover {
+        .floating-controls > button:hover {
             border-color: var(--primary);
             box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .floating-page-nav {
+            display: flex;
+            gap: 4px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        }
+
+        .floating-page-arrow {
+            border: none;
+            background: transparent;
+            color: var(--primary);
+            border-radius: 999px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .floating-page-arrow:hover {
+            background: var(--primary-light);
+        }
+
+        .floating-page-arrow:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .floating-page-indicator {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            padding: 0 4px;
+            white-space: nowrap;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body.hide-chinese .translation,
@@ -995,7 +1037,14 @@
     </div>
     </div>
 
+    <div id="pageListPopup" class="page-list-popup hidden"></div>
+
     <div class="floating-controls">
+        <div class="floating-page-nav">
+            <button class="floating-page-arrow" id="floatingPrev" type="button" title="上一頁">◀</button>
+            <span class="floating-page-indicator" id="floatingPageIndicator" title="長按選擇頁面">1 / 2</span>
+            <button class="floating-page-arrow" id="floatingNext" type="button" title="下一頁">▶</button>
+        </div>
         <button id="floatingChineseToggle" type="button">🙈 隱藏中文</button>
         <button id="floatingThemeToggle" type="button">🌙 深色模式</button>
     </div>
@@ -1246,40 +1295,142 @@
             return active ? active.id : null;
         }
 
+        function switchToPage(targetPage) {
+            if (!document.getElementById(targetPage)) return;
+
+            // Save current page scroll position
+            const currentPage = getCurrentPageId();
+            if (currentPage) {
+                pageScrollPositions[currentPage] = window.scrollY;
+            }
+
+            document.querySelectorAll('.page-container').forEach((p) => p.classList.remove('active'));
+            document.getElementById(targetPage).classList.add('active');
+
+            // Sync sidebar links
+            document.querySelectorAll('.page-link').forEach((l) => {
+                l.classList.remove('active');
+                l.removeAttribute('aria-current');
+            });
+            const sidebarLink = document.querySelector(`.page-link[data-page="${targetPage}"]`);
+            if (sidebarLink) {
+                sidebarLink.classList.add('active');
+                sidebarLink.setAttribute('aria-current', 'page');
+            }
+
+            // Sync floating page nav buttons
+            document.querySelectorAll('.floating-page-btn').forEach((btn) => {
+                btn.classList.toggle('active', btn.dataset.page === targetPage);
+            });
+
+            const note = document.getElementById('pageNote');
+            if (note) note.innerHTML = `目前所在頁面：<b>${pageLabels[targetPage] || targetPage}</b>`;
+
+            // Restore saved scroll position or go to top
+            const savedPos = pageScrollPositions[targetPage];
+            if (savedPos !== undefined) {
+                requestAnimationFrame(() => window.scrollTo({ top: savedPos, behavior: 'instant' }));
+            } else {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }
+        }
+
         document.querySelectorAll('.page-link[data-page]').forEach((link) => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const targetPage = link.dataset.page;
-                if (!document.getElementById(targetPage)) return;
-
-                // Save current page scroll position
-                const currentPage = getCurrentPageId();
-                if (currentPage) {
-                    pageScrollPositions[currentPage] = window.scrollY;
-                }
-
-                document.querySelectorAll('.page-container').forEach((p) => p.classList.remove('active'));
-                document.getElementById(targetPage).classList.add('active');
-
-                document.querySelectorAll('.page-link').forEach((l) => {
-                    l.classList.remove('active');
-                    l.removeAttribute('aria-current');
-                });
-                link.classList.add('active');
-                link.setAttribute('aria-current', 'page');
-
-                const note = document.getElementById('pageNote');
-                if (note) note.innerHTML = `目前所在頁面：<b>${pageLabels[targetPage] || targetPage}</b>`;
-
-                // Restore saved scroll position or go to top
-                const savedPos = pageScrollPositions[targetPage];
-                if (savedPos !== undefined) {
-                    requestAnimationFrame(() => window.scrollTo({ top: savedPos, behavior: 'instant' }));
-                } else {
-                    window.scrollTo({ top: 0, behavior: 'instant' });
-                }
+                switchToPage(link.dataset.page);
             });
         });
+
+        // === Floating Prev/Next & Long-press Page List ===
+        const allPages = Array.from(document.querySelectorAll('.page-container')).map(el => el.id);
+        const pageTitles = {};
+        document.querySelectorAll('.page-link[data-page]').forEach(link => {
+            pageTitles[link.dataset.page] = link.textContent.trim();
+        });
+
+        function getCurrentPageIndex() {
+            const cur = getCurrentPageId();
+            return allPages.indexOf(cur);
+        }
+
+        function updateFloatingNav() {
+            const idx = getCurrentPageIndex();
+            const indicator = document.getElementById('floatingPageIndicator');
+            if (indicator) indicator.textContent = `${idx + 1} / ${allPages.length}`;
+            const prev = document.getElementById('floatingPrev');
+            const next = document.getElementById('floatingNext');
+            if (prev) prev.disabled = idx <= 0;
+            if (next) next.disabled = idx >= allPages.length - 1;
+        }
+
+        // Patch switchToPage to also update floating nav
+        const _origSwitch = switchToPage;
+        switchToPage = function(targetPage) {
+            _origSwitch(targetPage);
+            updateFloatingNav();
+            hidePageListPopup();
+        };
+
+        document.getElementById('floatingPrev')?.addEventListener('click', () => {
+            const idx = getCurrentPageIndex();
+            if (idx > 0) switchToPage(allPages[idx - 1]);
+        });
+
+        document.getElementById('floatingNext')?.addEventListener('click', () => {
+            const idx = getCurrentPageIndex();
+            if (idx < allPages.length - 1) switchToPage(allPages[idx + 1]);
+        });
+
+        // Long-press on indicator to show page list popup
+        const pageListPopup = document.getElementById('pageListPopup');
+        let longPressTimer = null;
+
+        function showPageListPopup() {
+            const currentId = getCurrentPageId();
+            pageListPopup.innerHTML = '';
+            allPages.forEach((pageId, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'popup-item' + (pageId === currentId ? ' current' : '');
+                btn.innerHTML = `<span class="popup-num">${i + 1}</span> ${pageTitles[pageId] || pageId}`;
+                btn.addEventListener('click', () => switchToPage(pageId));
+                pageListPopup.appendChild(btn);
+            });
+            pageListPopup.classList.remove('hidden');
+        }
+
+        function hidePageListPopup() {
+            pageListPopup.classList.add('hidden');
+        }
+
+        const indicator = document.getElementById('floatingPageIndicator');
+
+        // Mouse long-press
+        indicator?.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            longPressTimer = setTimeout(showPageListPopup, 400);
+        });
+        indicator?.addEventListener('mouseup', () => clearTimeout(longPressTimer));
+        indicator?.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
+
+        // Touch long-press
+        indicator?.addEventListener('touchstart', (e) => {
+            longPressTimer = setTimeout(() => {
+                e.preventDefault();
+                showPageListPopup();
+            }, 400);
+        }, { passive: false });
+        indicator?.addEventListener('touchend', () => clearTimeout(longPressTimer));
+        indicator?.addEventListener('touchcancel', () => clearTimeout(longPressTimer));
+
+        // Close popup when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!pageListPopup.contains(e.target) && e.target !== indicator) {
+                hidePageListPopup();
+            }
+        });
+
+        updateFloatingNav();
 
         // === Number Page 2 play buttons based on card title ===
         document.querySelectorAll('#page2 .card').forEach((card) => {

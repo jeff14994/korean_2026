@@ -69,6 +69,8 @@ korean_2026/
 | **深色模式卡片標題不可見** | `.card-title` 原本硬編碼為 `#111827`（深色），在深色模式下幾乎看不到。改為 `var(--text)` 自動適應主題 |
 | **Google TTS 在 http:// 無法播放** | 透過 `http://127.0.0.1:8000` 存取時，瀏覽器會帶 `Referer` 標頭，Google 會拒絕請求。加入 `<meta name="referrer" content="no-referrer">` 移除 Referer，使 http:// 與 file:// 行為一致 |
 | **GitHub Pages 相容性** | 同上修復，`no-referrer` meta 標籤也解決了 GitHub Pages 上 Google TTS 被 CORS 阻擋的問題 |
+| **浮動頁面切換 (◀ 1/2 ▶)** | 右下角新增 prev/next 箭頭導航，顯示「頁碼 / 總頁數」，可擴展至任意數量頁面 |
+| **長按跳頁選單** | 長按頁碼指示器（400ms）彈出頁面列表，顯示每頁標題，點擊即可跳轉，點擊外部自動關閉 |
 
 ## 技術細節
 
