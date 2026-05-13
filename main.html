@@ -99,6 +99,11 @@
 
         .play-btn:hover { background: #1d4ed8; }
 
+        .play-btn:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
         .explanation {
             margin-top: 14px;
             padding-top: 12px;
@@ -106,12 +111,20 @@
             font-size: 0.97rem;
             color: var(--muted);
         }
+
+        .audio-note {
+            margin-top: -8px;
+            margin-bottom: 20px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>韓語助詞例句整理</h1>
         <p class="intro">依照 page1.md 內容整理。每一個編號中的句子都拆成獨立播放按鈕，方便逐句練習與聆聽。</p>
+        <p class="audio-note">語音已改為優先使用線上韓語 TTS 音訊，以提升播放品質；若無法載入，會自動改用瀏覽器內建語音。</p>
 
         <h2>圖片 image_2.png：主格、對照與受格助詞</h2>
 
@@ -145,21 +158,86 @@
     </div>
 
     <script>
-        function speakKorean(text) {
+        let currentAudio = null;
+        let koreanVoice = null;
+
+        function pickKoreanVoice() {
+            const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+            koreanVoice = voices.find((voice) => /ko[-_]KR|korean|한국/i.test(`${voice.lang} ${voice.name}`)) || null;
+        }
+
+        function stopAllPlayback() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ko-KR';
-                utterance.rate = 0.95;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert('此瀏覽器不支援語音播放功能。');
             }
+        }
+
+        function speakWithBrowser(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('此瀏覽器不支援語音播放功能。');
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+
+            if (koreanVoice) {
+                utterance.voice = koreanVoice;
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function buildTtsUrl(text) {
+            return `https://translate.google.com/translate_tts?ie=UTF-8&tl=ko&client=tw-ob&q=${encodeURIComponent(text)}`;
+        }
+
+        function playKorean(text, button) {
+            stopAllPlayback();
+
+            const originalLabel = button.textContent;
+            button.disabled = true;
+            button.textContent = '播放中...';
+
+            const audio = new Audio(buildTtsUrl(text));
+            currentAudio = audio;
+            audio.preload = 'auto';
+
+            const resetButton = () => {
+                button.disabled = false;
+                button.textContent = originalLabel;
+            };
+
+            audio.addEventListener('ended', resetButton, { once: true });
+            audio.addEventListener('pause', resetButton, { once: true });
+            audio.addEventListener('error', () => {
+                resetButton();
+                speakWithBrowser(text);
+            }, { once: true });
+
+            audio.play().catch(() => {
+                resetButton();
+                speakWithBrowser(text);
+            });
+        }
+
+        if ('speechSynthesis' in window) {
+            pickKoreanVoice();
+            window.speechSynthesis.onvoiceschanged = pickKoreanVoice;
         }
 
         document.querySelectorAll('.play-btn').forEach((button) => {
             button.addEventListener('click', () => {
-                speakKorean(button.dataset.text);
+                playKorean(button.dataset.text, button);
             });
         });
     </script>
