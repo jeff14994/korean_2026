@@ -45,6 +45,57 @@
             background: var(--bg);
         }
 
+        .app-shell {
+            display: grid;
+            grid-template-columns: 240px minmax(0, 1fr);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            border-right: 1px solid var(--border);
+            background: var(--card);
+            padding: 24px 16px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .sidebar-title {
+            margin: 0 0 14px;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .page-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .page-link {
+            display: block;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            text-decoration: none;
+            background: transparent;
+            font-size: 0.95rem;
+        }
+
+        .page-link.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .page-note {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
         .container {
             max-width: 980px;
             margin: 0 auto;
@@ -264,9 +315,33 @@
         .theme-toggle:hover {
             border-color: var(--primary);
         }
+
+        @media (max-width: 900px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="app-shell">
+    <aside class="sidebar">
+        <h2 class="sidebar-title">教材頁面</h2>
+        <nav class="page-list" aria-label="Page navigation">
+            <a class="page-link active" href="#" aria-current="page">Page 1：助詞整理</a>
+            <a class="page-link" href="#" onclick="return false;">Page 2：尚未加入</a>
+            <a class="page-link" href="#" onclick="return false;">Page 3：尚未加入</a>
+        </nav>
+        <p class="page-note">左側會顯示目前所在頁面。現在這一頁是 <b>Page 1</b>。</p>
+    </aside>
+
     <div class="container">
         <div class="top-bar">
             <h1>韓語助詞例句整理</h1>
@@ -347,6 +422,7 @@
         <section class="card"><h3 class="card-title">22. 每個 (마다)</h3><div class="sentence-item"><div class="korean">토요일(마다) 한국어를 배웁니다.</div><div class="translation">「每個」星期六都學韓語。</div><div class="word-meanings"><b>토요일</b>＝星期六、<b>한국어</b>＝韓語、<b>배웁니다</b>＝學習</div><button class="play-btn" data-text="토요일마다 한국어를 배웁니다.">▶ 播放句子 22-1</button></div><div class="sentence-item"><div class="korean">집집(마다) 인터넷이 있습니다.</div><div class="translation">「每家每戶」都有網路。</div><div class="word-meanings"><b>집집마다</b>＝家家戶戶、<b>인터넷</b>＝網路、<b>있습니다</b>＝有</div><button class="play-btn" data-text="집집마다 인터넷이 있습니다.">▶ 播放句子 22-2</button></div></section>
         <section class="card"><h3 class="card-title">23. 像...一樣 (처럼, 같이)</h3><div class="sentence-item"><div class="korean">그녀는 꽃(처럼/같이) 예쁩니다.</div><div class="translation">她「像」花一樣漂亮。</div><div class="word-meanings"><b>그녀</b>＝她、<b>꽃</b>＝花、<b>처럼/같이</b>＝像…一樣、<b>예쁩니다</b>＝漂亮</div><button class="play-btn" data-text="그녀는 꽃처럼 예쁩니다.">▶ 播放句子 23-1</button></div><div class="sentence-item"><div class="korean">대만의 높은 산에서도 한국(처럼) 눈이 옵니다.</div><div class="translation">在台灣的高山上也會「像」韓國一樣下雪。</div><div class="word-meanings"><b>대만</b>＝台灣、<b>높은 산</b>＝高山、<b>한국</b>＝韓國、<b>눈</b>＝雪、<b>옵니다</b>＝下（雪／雨）</div><button class="play-btn" data-text="대만의 높은 산에서도 한국처럼 눈이 옵니다.">▶ 播放句子 23-2</button></div></section>
         </section>
+    </div>
     </div>
 
     <script>
