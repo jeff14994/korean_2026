@@ -64,6 +64,40 @@
             color: #111827;
         }
 
+        .audio-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: end;
+            padding: 14px;
+            margin-bottom: 24px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+        }
+
+        .audio-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 180px;
+        }
+
+        .audio-field label {
+            font-size: 0.9rem;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .audio-field select,
+        .audio-field input {
+            padding: 8px 10px;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: #fff;
+        }
+
         .sentence-item {
             border: 1px solid #e5e7eb;
             background: #f9fafb;
@@ -126,6 +160,28 @@
         <p class="intro">依照 page1.md 內容整理。每一個編號中的句子都拆成獨立播放按鈕，方便逐句練習與聆聽。</p>
         <p class="audio-note">語音已改為優先使用線上韓語 TTS 音訊，以提升播放品質；若無法載入，會自動改用瀏覽器內建語音。</p>
 
+        <section class="audio-controls">
+            <div class="audio-field">
+                <label for="ttsMode">語音模式</label>
+                <select id="ttsMode">
+                    <option value="remote">線上 TTS（通常較自然）</option>
+                    <option value="browser">瀏覽器 / 系統韓語語音</option>
+                </select>
+            </div>
+            <div class="audio-field">
+                <label for="voiceSelect">韓語語音</label>
+                <select id="voiceSelect"></select>
+            </div>
+            <div class="audio-field">
+                <label for="rateControl">播放速度</label>
+                <input id="rateControl" type="range" min="0.7" max="1.1" step="0.05" value="0.9">
+            </div>
+            <div class="audio-field">
+                <label for="rateValue">目前速度</label>
+                <input id="rateValue" type="text" value="0.90x" readonly>
+            </div>
+        </section>
+
         <h2>圖片 image_2.png：主格、對照與受格助詞</h2>
 
         <section class="card"><h3 class="card-title">1. 主格與對照 (이/가, 은/는)</h3><div class="sentence-item"><div class="korean">운동장에서 영희(가) 무엇을 합니까?</div><div class="translation">在運動場，英熙（主詞）正在做什麼？</div><button class="play-btn" data-text="운동장에서 영희가 무엇을 합니까?">▶ 播放句子 1-1</button></div><div class="sentence-item"><div class="korean">운동장에서 영희(는) 조깅을 합니다.</div><div class="translation">在運動場，英熙（主題）正在慢跑。</div><button class="play-btn" data-text="운동장에서 영희는 조깅을 합니다.">▶ 播放句子 1-2</button></div><div class="explanation">가 用於標示句子的主詞，通常用於引出新資訊；는 用於對照或針對前面的主體進行補充敘述。</div></section>
@@ -159,11 +215,52 @@
 
     <script>
         let currentAudio = null;
+        let koreanVoices = [];
         let koreanVoice = null;
+        const audioCache = new Map();
+
+        const preferredVoicePatterns = [
+            /yuna/i,
+            /google.*korean/i,
+            /korean.*premium/i,
+            /sora/i,
+            /ko[-_]kr/i
+        ];
 
         function pickKoreanVoice() {
             const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
-            koreanVoice = voices.find((voice) => /ko[-_]KR|korean|한국/i.test(`${voice.lang} ${voice.name}`)) || null;
+            koreanVoices = voices.filter((voice) => /ko[-_]KR|korean|한국/i.test(`${voice.lang} ${voice.name}`));
+
+            koreanVoice = koreanVoices.find((voice) =>
+                preferredVoicePatterns.some((pattern) => pattern.test(`${voice.lang} ${voice.name}`))
+            ) || koreanVoices[0] || null;
+
+            populateVoiceOptions();
+        }
+
+        function populateVoiceOptions() {
+            const voiceSelect = document.getElementById('voiceSelect');
+            if (!voiceSelect) return;
+
+            voiceSelect.innerHTML = '';
+
+            if (!koreanVoices.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = '找不到可用韓語系統語音';
+                voiceSelect.appendChild(option);
+                return;
+            }
+
+            koreanVoices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = String(index);
+                option.textContent = `${voice.name} (${voice.lang})`;
+                if (voice === koreanVoice) {
+                    option.selected = true;
+                }
+                voiceSelect.appendChild(option);
+            });
         }
 
         function stopAllPlayback() {
@@ -187,7 +284,7 @@
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ko-KR';
-            utterance.rate = 0.9;
+            utterance.rate = Number(document.getElementById('rateControl')?.value || 0.9);
             utterance.pitch = 1;
 
             if (koreanVoice) {
@@ -201,6 +298,18 @@
             return `https://translate.google.com/translate_tts?ie=UTF-8&tl=ko&client=tw-ob&q=${encodeURIComponent(text)}`;
         }
 
+        function getCachedAudio(text) {
+            const key = buildTtsUrl(text);
+
+            if (!audioCache.has(key)) {
+                const audio = new Audio(key);
+                audio.preload = 'auto';
+                audioCache.set(key, audio);
+            }
+
+            return audioCache.get(key);
+        }
+
         function playKorean(text, button) {
             stopAllPlayback();
 
@@ -208,14 +317,22 @@
             button.disabled = true;
             button.textContent = '播放中...';
 
-            const audio = new Audio(buildTtsUrl(text));
-            currentAudio = audio;
-            audio.preload = 'auto';
-
             const resetButton = () => {
                 button.disabled = false;
                 button.textContent = originalLabel;
             };
+
+            const mode = document.getElementById('ttsMode')?.value || 'remote';
+
+            if (mode === 'browser') {
+                speakWithBrowser(text);
+                setTimeout(resetButton, 400);
+                return;
+            }
+
+            const audio = getCachedAudio(text);
+            currentAudio = audio;
+            audio.currentTime = 0;
 
             audio.addEventListener('ended', resetButton, { once: true });
             audio.addEventListener('pause', resetButton, { once: true });
@@ -234,6 +351,14 @@
             pickKoreanVoice();
             window.speechSynthesis.onvoiceschanged = pickKoreanVoice;
         }
+
+        document.getElementById('voiceSelect')?.addEventListener('change', (event) => {
+            koreanVoice = koreanVoices[Number(event.target.value)] || koreanVoice;
+        });
+
+        document.getElementById('rateControl')?.addEventListener('input', (event) => {
+            document.getElementById('rateValue').value = `${Number(event.target.value).toFixed(2)}x`;
+        });
 
         document.querySelectorAll('.play-btn').forEach((button) => {
             button.addEventListener('click', () => {
