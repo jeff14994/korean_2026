@@ -429,7 +429,6 @@
         }
 
         body.hide-chinese .translation,
-        body.hide-chinese .word-meanings,
         body.hide-chinese .explanation,
         body.hide-chinese .quiz-result.show,
         body.hide-chinese .quiz-result {
@@ -653,7 +652,7 @@
             <div class="sentence-item">
                 <div class="korean">저는 4월 15일에 태어났습니다. 친구는 5월 18일에 태어났습니다.</div>
                 <div class="translation">我在4月15日出生。朋友在5月18日出生。</div>
-                <div class="word-meanings"><b>태어났습니다</b>＝出生了、<b>4월</b>＝四月、<b>5월</b>＝五月</div>
+                <div class="word-meanings"><b>태어났습니다</b>＝出生了、<b>4월</b>＝四月、<b>15일</b>＝15號、<b>5월</b>＝五月、<b>18일</b>＝18號</div>
                 <button class="play-btn" data-text="저는 4월 15일에 태어났습니다. 친구는 5월 18일에 태어났습니다.">▶ 播放句子</button>
             </div>
             <div class="quiz-options">
@@ -1123,6 +1122,11 @@
             el.innerHTML = el.innerHTML.replace(/（[^）]+）/g, '<span class="chi">$&</span>');
         });
 
+        // In word-meanings, wrap the ＝Chinese part so hiding Chinese leaves only Korean words
+        document.querySelectorAll('.word-meanings').forEach(function(el) {
+            el.innerHTML = el.innerHTML.replace(/＝[^、<]+/g, '<span class="chi">$&</span>');
+        });
+
         document.getElementById('chineseToggle')?.addEventListener('click', () => {
             const isHidden = document.body.classList.toggle('hide-chinese');
             const btn = document.getElementById('chineseToggle');
@@ -1182,6 +1186,16 @@
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
+        });
+
+        // === Number Page 2 play buttons based on card title ===
+        document.querySelectorAll('#page2 .card').forEach((card) => {
+            const title = card.querySelector('.card-title');
+            const btn = card.querySelector('.play-btn');
+            if (title && btn) {
+                const num = title.textContent.replace(/（.*）/, '').trim().replace(/\.$/, '');
+                btn.textContent = '▶ 播放句子 ' + num;
+            }
         });
 
         // === Quiz Interaction ===
