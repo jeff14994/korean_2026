@@ -1,10 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
-    <meta http-equiv="refresh" content="0; url=main.html">
-    <title>韓語助詞整理</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入｜韓語助詞整理</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <p>正在跳轉至 <a href="main.html">main.html</a>…</p>
+<body class="login-body">
+    <main class="login-shell">
+        <section class="login-card">
+            <div class="login-badge">🔐 GitHub Pages Login</div>
+            <h1>韓語助詞整理</h1>
+            <p class="login-description">請使用帳號與密碼登入後查看教材內容。</p>
+
+            <form id="loginForm" class="login-form">
+                <label class="login-label" for="account">帳號</label>
+                <input id="account" name="account" class="login-input" type="text" autocomplete="username" placeholder="請輸入帳號" required>
+
+                <label class="login-label" for="password">密碼</label>
+                <input id="password" name="password" class="login-input" type="password" autocomplete="current-password" placeholder="請輸入密碼" required>
+
+                <button class="login-submit" type="submit">登入</button>
+                <p id="loginMessage" class="login-message" role="alert" aria-live="polite"></p>
+            </form>
+
+            <p class="login-help">
+                注意：GitHub Pages 是純靜態網站，這個登入機制是前端驗證，
+                適合簡單限制入口，但<strong>不能作為真正安全的帳號系統</strong>。
+            </p>
+        </section>
+    </main>
+
+    <script src="js/app.js"></script>
 </body>
 </html>

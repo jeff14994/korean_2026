@@ -7,6 +7,9 @@ const SCAN_TOTAL = 64;
 const SCAN_FOLDER = 'CamScanner 5-15-26 21.57';
 const SCAN_PREFIX = 'CamScanner 5-15-26 21.57_';
 const THEME_KEY = 'korean-2026-theme';
+const AUTH_KEY = 'korean-2026-authenticated';
+const LOGIN_ACCOUNT = 'admin';
+const LOGIN_PASSWORD = 'korean2026!!@@!!';
 
 // === Audio State ===
 let currentAudio = null;
@@ -20,6 +23,73 @@ const preferredVoicePatterns = [
 
 // === Page State ===
 const pageScrollPositions = {};
+
+// ─────────────────────────────────────────────
+// 0. Auth / Login Guard
+// ─────────────────────────────────────────────
+function isAuthenticated() {
+    return localStorage.getItem(AUTH_KEY) === 'true';
+}
+
+function setAuthenticated(value) {
+    localStorage.setItem(AUTH_KEY, value ? 'true' : 'false');
+}
+
+function redirectToLogin() {
+    window.location.href = 'index.html';
+}
+
+function redirectToMain() {
+    window.location.href = 'main.html';
+}
+
+function protectMainPage() {
+    if (!isAuthenticated()) redirectToLogin();
+}
+
+function initLoginPage() {
+    const form = document.getElementById('loginForm');
+    if (!form) return;
+
+    if (isAuthenticated()) {
+        redirectToMain();
+        return;
+    }
+
+    const message = document.getElementById('loginMessage');
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const account = document.getElementById('account')?.value.trim() || '';
+        const password = document.getElementById('password')?.value || '';
+
+        if (account === LOGIN_ACCOUNT && password === LOGIN_PASSWORD) {
+            setAuthenticated(true);
+            if (message) {
+                message.textContent = '登入成功，正在前往教材頁面…';
+                message.classList.remove('error');
+                message.classList.add('success');
+            }
+            setTimeout(redirectToMain, 250);
+            return;
+        }
+
+        setAuthenticated(false);
+        if (message) {
+            message.textContent = '帳號或密碼錯誤，請再試一次。';
+            message.classList.remove('success');
+            message.classList.add('error');
+        }
+    });
+}
+
+function initLogoutButton() {
+    const logoutButton = document.getElementById('logoutButton');
+    if (!logoutButton) return;
+    logoutButton.addEventListener('click', () => {
+        setAuthenticated(false);
+        redirectToLogin();
+    });
+}
 
 // Build pageLabels dynamically: page1, page2, page3, page4, page5..page68
 const pageLabels = {
@@ -459,6 +529,13 @@ function enhanceTextElements() {
 // 9. Initialize Everything
 // ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('loginForm')) {
+        initLoginPage();
+        return;
+    }
+
+    protectMainPage();
+
     // Generate scan pages first (before querying allPages)
     generateScanPages();
 
@@ -484,6 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme toggles
     document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
     document.getElementById('floatingThemeToggle')?.addEventListener('click', toggleTheme);
+    initLogoutButton();
 
     // Chinese toggles
     document.getElementById('chineseToggle')?.addEventListener('click', toggleChinese);

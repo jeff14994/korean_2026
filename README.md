@@ -25,11 +25,30 @@
 
 ## 使用方式
 
-直接用瀏覽器開啟 `main.html` 即可使用，無需安裝任何套件。
+直接用瀏覽器開啟 `index.html` 即可使用，無需安裝任何套件。
 
 ```bash
-open main.html
+open index.html
 ```
+
+### 登入資訊
+
+- 帳號：`admin`
+- 密碼：`korean2026!!@@!!`
+
+> 注意：因為 GitHub Pages 是靜態網站，這裡的登入是以前端 JavaScript 實作，適合做簡單入口限制，但**不是真正安全的後端驗證**。
+
+## GitHub Pages 部署
+
+這個專案是純靜態網站，可直接部署到 GitHub Pages：
+
+1. 將目前專案推送到 GitHub 倉庫。
+2. 到 GitHub 倉庫頁面 → **Settings** → **Pages**。
+3. 在 **Build and deployment** 中選擇：
+   - **Source**: `Deploy from a branch`
+   - **Branch**: `main` / `/ (root)`
+4. 儲存後等待 GitHub Pages 完成部署。
+5. 部署完成後，網站入口會是 `index.html`，先看到登入頁，登入成功後進入 `main.html`。
 
 ## 檔案結構
 
