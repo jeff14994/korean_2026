@@ -583,6 +583,72 @@ body.dark-mode .quiz-result.wrong-result {
     margin-top: 12px;
 }
 
+/* === Vocabulary Blank (Page 3 & 4) === */
+.vocab-blank {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+    padding: 1px 8px;
+    border-radius: 4px;
+    border-bottom: 2px solid var(--primary);
+    cursor: help;
+    transition: background 0.2s;
+}
+
+.vocab-blank:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* === Listening Options (Page 4) === */
+.listen-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.listen-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--subtle-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.listen-option:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+
+.listen-option .option-num {
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 28px;
+}
+
+.listen-option .korean {
+    font-size: 1.05rem;
+    flex: 1;
+}
+
+.listen-option .translation {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-left: auto;
+    padding-left: 8px;
+}
+
+.listen-option .play-btn {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    min-width: auto;
+}
+
 /* === Chinese Hide Toggle === */
 body.hide-chinese .translation,
 body.hide-chinese .explanation,
@@ -592,6 +658,8 @@ body.hide-chinese .quiz-result {
 }
 
 body.hide-chinese .chi { display: none; }
+body.hide-chinese .listen-option .translation { display: none; }
+body.hide-chinese .word-meanings { display: none; }
 
 /* === Responsive === */
 @media (max-width: 900px) {

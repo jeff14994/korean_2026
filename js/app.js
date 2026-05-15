@@ -21,21 +21,27 @@ const preferredVoicePatterns = [
 // === Page State ===
 const pageScrollPositions = {};
 
-// Build pageLabels dynamically: page1, page2, page3..page66
-const pageLabels = { page1: 'Page 1：助詞整理', page2: 'Page 2：閱讀理解' };
+// Build pageLabels dynamically: page1, page2, page3, page4, page5..page68
+const pageLabels = {
+    page1: 'Page 1：助詞整理',
+    page2: 'Page 2：閱讀理解',
+    page3: 'Page 3：閱讀+單字',
+    page4: 'Page 4：單字+聽力'
+};
+const SCAN_PAGE_OFFSET = 4; // scan pages start at page5
 for (let i = 1; i <= SCAN_TOTAL; i++) {
-    pageLabels[`page${i + 2}`] = `Page ${i + 2}：掃描 ${i}`;
+    pageLabels[`page${i + SCAN_PAGE_OFFSET}`] = `Page ${i + SCAN_PAGE_OFFSET}：掃描 ${i}`;
 }
 
 // ─────────────────────────────────────────────
-// 1. Generate Scan Pages (page3 – page66)
+// 1. Generate Scan Pages (page5 – page68)
 // ─────────────────────────────────────────────
 function generateScanPages() {
     const container = document.getElementById('scanPagesContainer');
     if (!container) return;
 
     for (let i = 1; i <= SCAN_TOTAL; i++) {
-        const pageNum = i + 2; // page3 = image 1, page66 = image 64
+        const pageNum = i + SCAN_PAGE_OFFSET; // page5 = image 1, page68 = image 64
         const div = document.createElement('div');
         div.id = `page${pageNum}`;
         div.className = 'page-container';
@@ -56,9 +62,10 @@ function generateScanPages() {
         select.appendChild(placeholder);
 
         for (let i = 1; i <= SCAN_TOTAL; i++) {
+            const pageNum = i + SCAN_PAGE_OFFSET;
             const opt = document.createElement('option');
-            opt.value = `page${i + 2}`;
-            opt.textContent = `掃描 ${i}（Page ${i + 2}）`;
+            opt.value = `page${pageNum}`;
+            opt.textContent = `掃描 ${i}（Page ${pageNum}）`;
             select.appendChild(opt);
         }
 
@@ -218,7 +225,7 @@ function switchToPage(targetPage) {
     const scanSelect = document.getElementById('sidebarScanSelect');
     if (scanSelect) {
         const pageNum = parseInt(targetPage.replace('page', ''));
-        scanSelect.value = pageNum >= 3 ? targetPage : '';
+        scanSelect.value = pageNum > SCAN_PAGE_OFFSET ? targetPage : '';
     }
 
     // Page note
@@ -330,12 +337,82 @@ function initQuiz() {
     });
 }
 
+function initQuizPage3() {
+    let score = 0;
+    let answered = 0;
+    const cards = document.querySelectorAll('#page3 .card[data-answer]');
+    const total = cards.length;
+
+    const scoreEl = document.getElementById('quizScore3');
+    const totalEl = document.getElementById('quizTotal3');
+    const answeredEl = document.getElementById('quizAnswered3');
+    if (totalEl) totalEl.textContent = total;
+
+    cards.forEach(card => {
+        const correct = card.dataset.answer;
+        const options = card.querySelectorAll('.quiz-option');
+        const result = card.querySelector('.quiz-result');
+
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                if (card.classList.contains('answered')) return;
+                card.classList.add('answered');
+
+                const chosen = opt.dataset.val;
+                const isCorrect = chosen === correct;
+
+                options.forEach(o => {
+                    o.classList.add('selected');
+                    if (o.dataset.val === correct) o.classList.add('correct');
+                });
+
+                if (!isCorrect) {
+                    opt.classList.add('wrong');
+                    result.classList.add('wrong-result');
+                } else {
+                    score++;
+                    result.classList.add('correct-result');
+                }
+
+                answered++;
+                result.classList.add('show');
+                if (scoreEl) scoreEl.textContent = score;
+                if (answeredEl) answeredEl.textContent = answered;
+            });
+        });
+    });
+
+    // Vocab preview buttons for page3 quiz
+    document.querySelectorAll('#page3 .quiz-options').forEach(optionsDiv => {
+        const preview = document.createElement('div');
+        preview.className = 'vocab-preview';
+        const label = document.createElement('span');
+        label.textContent = '🔊 點擊聽發音：';
+        label.style.fontSize = '0.85rem';
+        label.style.color = 'var(--muted)';
+        preview.appendChild(label);
+
+        optionsDiv.querySelectorAll('.quiz-option').forEach(opt => {
+            const korean = opt.textContent.replace(/（[^）]+）/g, '').trim();
+            if (!korean) return;
+            const btn = document.createElement('button');
+            btn.className = 'vocab-preview-btn';
+            btn.textContent = '🔈 ' + korean;
+            btn.type = 'button';
+            btn.addEventListener('click', e => { e.stopPropagation(); playKorean(korean, btn); });
+            preview.appendChild(btn);
+        });
+
+        optionsDiv.after(preview);
+    });
+}
+
 // ─────────────────────────────────────────────
 // 8. Text Enhancements (wrap Chinese, vocab previews)
 // ─────────────────────────────────────────────
 function enhanceTextElements() {
-    // Wrap Chinese in .chi spans for hiding
-    document.querySelectorAll('.quiz-option, #page2 .card-title, .score-bar, .quiz-result').forEach(el => {
+    // Wrap Chinese in .chi spans for hiding (all pages)
+    document.querySelectorAll('.quiz-option, .score-bar, .quiz-result').forEach(el => {
         el.innerHTML = el.innerHTML.replace(/（[^）]+）/g, '<span class="chi">$&</span>');
     });
 
@@ -430,12 +507,15 @@ document.addEventListener('DOMContentLoaded', () => {
         playKorean(text, tmp);
     });
 
-    // Panel tabs
+    // Panel tabs (scoped per page container)
     document.querySelectorAll('.panel-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             const targetId = tab.dataset.panel;
-            document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            const pageContainer = tab.closest('.page-container');
+            if (pageContainer) {
+                pageContainer.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+                pageContainer.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            }
             tab.classList.add('active');
             document.getElementById(targetId)?.classList.add('active');
         });
@@ -495,6 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Text enhancements & quiz
     enhanceTextElements();
     initQuiz();
+    initQuizPage3();
 
     // Initial floating nav state
     updateFloatingNav();
